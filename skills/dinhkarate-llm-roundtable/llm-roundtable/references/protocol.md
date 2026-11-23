@@ -1,0 +1,279 @@
+# Protocol
+
+## Roles
+
+- **Moderator**: the agent the user is talking to. Writes the brief, runs the script, reports.
+  Does not vote, does not edit ballots.
+- **Seats**: one CLI process per member per round, fresh session each time (`--ephemeral`,
+  `-p`), read-only and without publishing tools:
+
+  | CLI | Read-only by | Outward tools removed |
+  |---|---|---|
+  | claude | `--permission-mode dontAsk` + allowlist: Read/Grep/Glob/WebSearch/WebFetch, `ls`, `wc`, `git status`, `git ls-files` (no code execution; no `rg`/`git diff`, whose `--pre`/`--output` run or write) | `--strict-mcp-config` (no MCP servers), `--tools` without Agent, `--restricted` (user/project/local settings ignored: the user's hooks, e.g. SessionStart context, and auto-memory never reach a seat) |
+  | codex | `-s read-only` sandbox (kernel) | `--disable apps computer_use browser_use` |
+  | grok | `--sandbox read-only` (kernel; temp dirs stay writable) | no MCP configured |
+  | agy | `--sandbox` without `--dangerously-skip-permissions` (that flag can lift the sandbox, agy issue #36; headless then denies prompt-gated tools like read_url) and `"isolate": true`: with `--workspace` it works in a snapshot copy of the checkout's tracked + untracked files | no MCP configured |
+  | opencode (opt-in, not in `full`) | `--agent plan`, `"isolate": true` (cwd and `PWD` are a snapshot copy of the workspace); **not** a sandbox: its background service can still run shell commands anywhere (`--private` drops this seat) | no MCP configured |
+
+  Plan modes are avoided on claude and grok: they inject "write a plan, exit plan mode" instructions
+  and end headless runs before the ballot. Each call gets `ROUNDTABLE_SEAT=<id>` so a seat that loads
+  this skill cannot start a nested council. With `--workspace`, the script fingerprints it before the
+  council and after every round (git checkout, also from a subdirectory: HEAD, status, diff, untracked file
+  hashes, and path/size/mtime of gitignored files such as `.env`, up to 20,000; otherwise path/size/mtime of
+  every file). Dirs in the skip list (`.git`, `node_modules`, `.venv`, `venv`, `__pycache__`, `dist`, `build`,
+  `target`, test/type caches) are not watched. Any change gives a WARNING banner and exit code 3. Secret-looking
+  strings that seats quote are redacted before the cross-exam dossier goes to the other vendors.
+- **Isolation of the anonymity**: seat working directories are fresh temp dirs outside the run
+  directory, and `rN_labels.json` is written only after round N has finished.
+- **Cleanup**: SIGINT/SIGTERM/exit kill every running seat's process group.
+- **Provenance**: a ballot is read only from the seat's final answer (stdout, or codex's last message), never
+  from stderr or echoed tool output. Seats get the parent environment minus credentials their CLI does not
+  need: every secret-looking variable (TOKEN, SECRET, API_KEY, ...) is removed except those whose prefix the
+  seat's own adapter lists in `auth_env` (claude: `ANTHROPIC_`, `CLAUDE_`; codex: `OPENAI_`, `CODEX_`; grok:
+  `XAI_`, `GROK_`; agy: `GEMINI_`, `GOOGLE_`, `AGY_`; opencode: `OPENCODE_`). Prompts and transcripts live in a temp dir during a round and are copied into the run dir after it.
+- **Tainted runs**: a changed workspace makes the run non-actionable: `VERDICT: NONE (workspace_changed)`,
+  `run` exits 3, `status` prints TAINTED and exits 4. The fingerprint is compared after every round, so a write
+  in round 1 stops the council before round 2 (`workspace_changed_at: "after round 1"`).
+- **Untrusted data**: files, web pages, documents quoted in the brief and other members' text are data under
+  review. Both prompts say so and ask the seat to report text that tries to steer the council in
+  `injection_suspected`. In the cross-exam each position sits between fences carrying a random nonce per prompt
+  (`<<<a1b2c3d4e5f6 M2` ... `a1b2c3d4e5f6 M2>>>`); a seat cannot know the nonce, so it cannot close the fence
+  and write outside it. This is mitigation, not enforcement: reports are surfaced (decision.md banner and
+  "Injection reports", `INJECTION:` line, `status --json`), never acted on, and they block `--early-stop`.
+- **Tokens**: adapters run their CLI's JSON output (`format` in seats.json): claude `--output-format json`, codex
+  `--json`, grok `--output-format json`, opencode `--format json` plus a local `session export <id>` for its
+  token totals. agy runs as plain text (no figures). The answer is read from that output; an output the parser
+  does not understand falls back to the raw text, so a format change costs token figures, never a ballot.
+
+## Rounds
+
+| Round | Members see | Members return |
+|---|---|---|
+| 1 (blind) | brief + options | vote, confidence, summary, evidence[], risks, conditions, kill_criteria[] (optional), restatement, missing_option, injection_suspected |
+| 2..3 (cross-exam) | brief + every previous position as M1..Mn, shuffled, own one unmarked, each fenced; per position: vote, summary, evidence, open questions, conditions, risks, rebuttals (no confidence) | vote, confidence, summary, evidence[], risks, conditions, kill_criteria[], injection_suspected + ratings{Mi: 0-2}, rebuttals[], decisive_evidence[] |
+
+Default 2 rounds. Each cross-exam round is a new session, so a member does not remember its own
+earlier answer; the anonymity is real, not a request to "please ignore names".
+
+Evidence types: `FACT` (verified, with a source), `INFERENCE` (reasoned from cited facts),
+`ASSUMPTION` (unverified), `UNKNOWN` (an open question that matters and that the seat could not answer).
+FACT or INFERENCE items without a source are downgraded to ASSUMPTION.
+With `--workspace`, a mechanical **source check** also downgrades a FACT or INFERENCE item when every
+`file:line` its source cites is missing from the workspace, malformed (line 0, end before start) or past the
+end of the file (for `file:a-b`, line `b` counts). A cited path with a directory must be a workspace path or
+end with one (`sub/mod.py` matches `pkg/sub/mod.py`, `other/mod.py` does not); an absolute path must be inside
+the workspace or end with a workspace path that has a directory part; a bare name (`mod.py`) matches any file
+of that name. Files inside skipped dirs (node_modules, target, ...) are looked up on disk. A bare
+`host:port` is not a citation: without a `/`, only known file extensions count. Sources without a `file:line`
+(URLs, commands, docs) are never judged; this checks that a citation exists, not what it says (that would
+be a chairman). Downgraded items keep the reason (`downgraded`), peers see them as ASSUMPTION, and
+decision.md lists them under "Sources that did not check out".
+A ballot needs at least one FACT or INFERENCE item to count
+(`no_evidence` otherwise; a ballot with only UNKNOWN items is `no_evidence`). A vote that is not one of
+the option ids is `invalid`. UNKNOWN items are kept out of the rated and rendered evidence: the dossier
+lists them as "open questions (UNKNOWN, not evidence)" and the cross-exam prompt says not to treat them as
+evidence when rating; decision.md lists them under "Unresolved questions".
+
+**Kill criteria** (optional, any round): observable signals that would show later that the choice was
+wrong, phrased "If <X> is observed, ...". decision.md lists those of the seats whose final valid ballot
+voted for the verdict ("Kill criteria for V", seat-attributed, at most 20). When the verdict is the
+`--default`, the heading says it is the safe default and not a council choice. Hosts report and watch
+them; the script never acts on them.
+
+**Framing check** (round 1 only): `restatement` (the decision in one sentence; audit only, never
+compared) and `missing_option` (empty, or one concrete action the options left out; not a mix of the
+listed options). Read from the round-1 history after the last round, so round 2 cannot erase it.
+`framing_concern` is true when the seats with a valid round-1 ballot that named a missing option number
+at least `max(2, ceil(n_valid / 2))` (duo: both seats; six: three). It is advisory: the tally, the verdict
+and the `VERDICT:` line are unchanged; decision.md shows a banner and a "Framing check" section, and
+`status` prints `FRAMING: concern (k/n ...)` before `DONE`.
+
+## Seat lifecycle
+
+```
+primary model --(quota | unavailable | error | timeout)--> fallback model (same family, one level down)
+     |                                                          |
+     ok / no_evidence / invalid: stop                           fails too -> UNATTENDED
+CLI missing on PATH -> UNATTENDED immediately
+```
+
+- Status is taken from the process: a parsed ballot wins; otherwise stderr/stdout is matched against
+  quota patterns (rate limit, 429, usage limit, quota, credits...) and unavailable patterns
+  (unknown model, not supported, deprecated, may not exist...).
+- A CLI that rejects a flag of its adapter ("unknown option", too old: `--restricted` needs Claude Code >= 2.1.248)
+  does not walk to the fallback either (same CLI); the UNATTENDED detail says so, and `doctor` reports the seat
+  `outdated` when the CLI's `--help` lacks a flag listed in the adapter's `requires.flags`.
+- When a later round fails for a seat, its next round starts on the last model level it tried (the chain only
+  moves down), so `run --dry-run`'s call bound holds.
+- Account-level limits (Claude "session limit"/"weekly limit", an account disabled by the provider) do not
+  walk to the fallback model: it runs on the same account and would fail the same way. The seat is
+  UNATTENDED with "account-level limit, fallback skipped".
+- A seat that fell back in round 1 starts later rounds on the fallback model.
+- If a seat fails in a later round, its previous ballot is carried forward and marked: it still counts, but it
+  never answered that round's cross-examination. decision.md shows `ok (carried)` and a "Carried ballots"
+  section; `usage.carried` and `status --json` `carried` list the seats.
+- A fallback that equals another seat's primary is dropped (two seats must not be the same voice).
+- OpenCode `auto:opencode-free`: `opencode models` filtered to `opencode/*free` (or zero cost on
+  models.dev), excluding families that already sit (claude, gpt, grok, gemini...) and models marked
+  deprecated by models.dev or seen failing as deprecated (`~/.roundtable/dead-models.json`). Models matching
+  the seat's `prefer` patterns (regex on id, family or name, in order; default `["muse-spark"]`) come first, then
+  the newest release date. `count: N` seats N distinct models; seat i falls back to candidate i+N. Release dates
+  come from models.dev (cached a day), else the bundled `scripts/opencode-models.json`, which a weekly CI job
+  refreshes (`tools/update_models.py`, report in `docs/model-watch.md`).
+
+## Tally
+
+```
+peer(seat)   = mean of the 0-2 ratings other members with a valid ballot gave it in the last cross-exam
+               (1.0 if none, and 1.0 if the seat switched vote after the position they rated)
+weight(seat) = seat.weight x (0.5 + 0.5 x peer)          -> 0.5x .. 1.5x
+score(opt)   = sum of weight over valid ballots for opt
+verdict      = argmax score                               (decision_rule "count": argmax votes, score breaks ties)
+tie          -> option the tiebreak seat (Fable) voted for; Fable not on a tied option -> TIE
+valid ballots < quorum (2) -> NO QUORUM
+share        = score(winner) / sum of score over valid ballots   (unrounded; after the tie-break;
+               weighted under both decision rules; undecided: the top option's share; no valid weight: null)
+--min-margin X (opt-in, also "min_margin" in seats.json): share < X - 1e-9 -> treated like a TIE:
+               tally.council_verdict = the council's pick, tally.narrow_margin = true, no second tie-break
+TIE / NO QUORUM / narrow margin -> --default (safe option from the brief; review mode: CHANGES), else VERDICT NONE
+precedence   : tainted workspace > NO QUORUM > narrow margin > TIE
+```
+
+`X` is a number or fraction in (0, 1]. The comparison is inclusive: a uniform 4-2 split of six has share
+0.6667, which passes `2/3` and fails `0.67`. A high floor turns the council into "always the default";
+peer ratings move weights between 0.5x and 1.5x, so shares near the floor are noisy. The share is always
+recorded and printed (`Margin:` in decision.md, `MARGIN:` from `status`), with or without the flag.
+
+**Early stop** (`--early-stop`, opt-in; default off): after round 1 the cross-exam is skipped only when every
+seated seat returned a valid ballot for the same option, there are at least `max(quorum, 3)` of them, they
+come from at least 2 vendor CLIs, there is no framing concern and no injection report. Never in review mode.
+decision.md says "unanimous in round 1; evidence cited but not peer-rated"; `decided_by` stays `council`.
+Every run, early stop or not, records a shadow measurement (`shadow.r1_unanimous`, `shadow.changed_after_r1`)
+so the cost of skipping round 2 can be measured instead of assumed.
+
+## Audit mode
+
+`--mode audit` (no options, no `--default`, at most 2 rounds; `--early-stop` and `--min-margin` do not apply):
+
+```
+round 1 (find)    every seat audits the brief's scope alone: {"summary", "coverage", "findings": [{"title",
+                  "severity", "category", "location", "detail", "recommendation", "evidence"}]}; at most 15
+                  findings per seat; a finding without FACT/INFERENCE evidence is listed as unsupported, never
+                  verified; file:line citations are source-checked as in any run
+merge             (script, no model call) findings from different seats are merged when they cite the same file
+                  within 3 lines with related titles (word overlap >= 0.2, or the same category), or their titles
+                  nearly match (>= 0.6); two findings of one seat are never merged. The first 40, by number of
+                  reporters then severity, go to round 2 with ids F1..Fn in a shuffled order
+round 2 (verify)  every seat gets every finding inside nonce fences, authors and reporter counts hidden, and
+                  answers per id CONFIRMED | REJECTED | UNSURE + its own severity + optional duplicate_of;
+                  CONFIRMED/REJECTED without FACT/INFERENCE evidence count as UNSURE
+support           reporters + seats that CONFIRMED (a seat's verdict on a finding it reported is ignored)
+against           seats that REJECTED
+confirmed         >= 2 supporting seats and weight(support) > weight(against)
+rejected          weight(against) > weight(support)
+disputed          someone rejected it, neither of the above
+unverified        otherwise (one reporter, nobody confirmed; also every finding past the first 40)
+duplicate         more than half of the seats that judged F (not its reporters) call it a duplicate of the
+                  same G: F's reporters count for G
+severity          lower median of the severities of the reporters and confirmers
+verdict           FINDINGS if any finding is confirmed, else CLEAN; valid reports < quorum -> NONE (none);
+                  tainted workspace -> NONE (workspace_changed)
+```
+
+With `--rounds 1` there is no verification: a finding is confirmed only when two seats reported it blind.
+Seats that hit quota fall back one model level, then are UNATTENDED, as in every run (no waiting for a reset).
+Output: `findings.json` (the merged findings with status, support, against and every check), `decision.md`
+(confirmed, disputed, unverified, rejected, duplicates, unsupported, coverage), `result.json`, and in
+`status --json` an `audit` object (counts, a one-line row per finding, the findings.json path).
+
+**Diversity** (reported, never a quorum rule): `tally.vendor_clis` lists the CLIs behind the ballots that
+counted; `tally.low_diversity` is true when there is only one (e.g. the duo preset), with a banner in decision.md.
+
+A whole-run `--deadline SECONDS` (opt-in) starts with the run: each call's timeout is cut to what is
+left, no call (fallback or nudge included) starts after it, a later round is skipped, and the ballots
+so far are tallied (carried ballots included). Seat discovery is not interrupted.
+
+Confidence is recorded but not weighted: self-reported confidence is poorly calibrated and easy to
+inflate. Peer-rated evidence is the weight because that is what the user asked the council to
+argue over.
+
+## Result contract (schema_version 2)
+
+`result.json` and `status --json` carry `schema_version: 2` (v0.1 results have none and read as 1).
+The text contract does not change: a foreground `run` ends with
+`VERDICT: <option|NONE> (council|tiebreak|default|none|workspace_changed)`, and `status` ends with `DONE`
+(or `TAINTED`) and then that line; new lines (`USAGE:`, `MARGIN:`, `EARLY STOP:`, `INJECTION:`, `FRAMING:`) always come before them.
+
+| result.json | Meaning |
+|---|---|
+| `tally.verdict`, `tally.decided_by` | what to act on, as in the `VERDICT:` line |
+| `tally.council_verdict` | the council's own pick when it is not acted on (tainted run, narrow margin) |
+| `tally.share`, `tally.share_of`, `tally.min_margin`, `tally.narrow_margin` | margin, see Tally |
+| `tally.framing_concern`, `tally.framing` | flag; `flagged`, `valid`, `threshold`, `proposals[]`, `restatements{}` |
+| `conditions[]` | `{seat, condition}` of the seats that voted for the verdict |
+| `kill_criteria_for`, `kill_criteria[]` | `{seat, criterion}`, winning side only, at most 20 |
+| `unresolved_questions[]` | `{seat, vote, question, source}`: UNKNOWN items of every valid final ballot, at most 20 |
+| `usage` | `calls`, `nudges`, `fallback_calls`, `fallback_seats`, `unattended`, `skipped`, `carried`, `rounds_requested`, `rounds_run`, `wall_secs{r1..}`, `total_wall_secs`, `deadline_secs`, `deadline_hit`, `tokens`, `calls_without_tokens`, `per_seat{calls, nudges, fallback_calls, call_secs, tokens, calls_without_tokens}` |
+| `seats.<id>.history[].attempts[]` | one entry per CLI process: `round`, `model`, `level`, `kind` (primary, fallback, nudge), `status`, `detail`, `secs`, `tokens` |
+| `tally.early_stop`, `early_stop` | flag; `{requested, stopped, reason, valid, seated, vendor_clis, need_valid}` |
+| `shadow` | `{r1_unanimous, r1_votes{}, changed_after_r1[]}`, every run |
+| `tally.vendor_clis`, `tally.low_diversity` | see Diversity |
+| `injection_suspected[]` | `{seat, round, where}`, at most 20 |
+| `downgraded_sources[]` | `{seat, round, claim, why}` from the source check, at most 40 |
+| `workspace_changed_at` | `"after round N"` / `"after the council"` when tainted |
+| `provenance` | `script_version`, `brief_sha256`, `options_sha256`, `seed` (the label shuffle), `workspace_head` (git) |
+
+Usage counts are telemetry, computed after the tally and never fed into it. A call is a CLI process
+that was started (the call before a nudge and the nudge are two calls). `wall_secs` is elapsed time per
+round; seats run in parallel, so it is not the sum of call times. Round timings are stored in meta.json,
+so `tally` reproduces them, together with `min_margin`.
+
+Tokens are what each CLI reports, normalised to `{input, cached, output, total, cost_usd?}`: `input` counts
+every prompt token (fresh, cache reads and cache writes), `cached` is the cache-read part of it, `output`
+includes reasoning, `total = input + output`. `cost_usd` appears only where the CLI reports one (claude,
+grok; opencode free models report 0); it is the CLI's list-price figure, not what a subscription is billed.
+A call whose CLI reported nothing (agy, a crash, a timeout) counts in `calls_without_tokens`.
+
+`status --json` prints `state` (STARTING, RUNNING, DONE, TAINTED, FAILED), `verdict`, `decided_by`,
+`actionable` (DONE with a verdict), `council_verdict`, `share`, `share_of`, `min_margin`, `narrow_margin`,
+`framing_concern`, `framing`, `conditions`, `kill_criteria_for`, `kill_criteria`, `unresolved_questions`,
+`unattended`, `carried`, `early_stop`, `low_diversity`, `injection_suspected`, `downgraded_sources` (a count),
+`usage` (without `per_seat`) and `decision_md`. Exit codes match plain `status`
+(0, 4 for TAINTED, 1 for FAILED).
+
+`run --dry-run` goes through the same validation as `run` (options, secret scan, `--default`,
+`--min-margin`, `--deadline`, seat ids), resolves seats and prints one JSON object: options, default,
+rounds, `timeout_per_call`, quorum, each seat (`primary`, `fallback`, `fallback_dropped`, `cli_found`,
+`can_sit`, `reason`, `max_calls`), `skipped`, `sitting`, `quorum_ok`, `discovery_ran`, `prompt_bytes_r1`,
+`bounds` and `warnings` (unparsed option lines, seats that cannot sit, NO QUORUM, argv prompts near
+32 KB). It creates no run directory and calls no model; seat discovery does run. Bounds, per seat with
+`n` models over `r` rounds: `max_calls = 2 x (r + n - 1)` (each model call may get one nudge, and the
+level only moves down the chain); `max_wall_secs = rounds run x 2 x max n x timeout`, capped by
+`--deadline`. Both exclude discovery, the workspace snapshot/fingerprint, CLI start-up and opencode's local
+`session export` (at most 60 s, cut by `--deadline`).
+
+## Outcomes and the ledger
+
+`outcome <run> right|wrong|mixed|unknown [--note ...]` records afterwards whether acting on a verdict
+turned out right (`outcome.json` in the run directory). `ledger [--json]` summarises every finished run
+under the runs directory: how runs were decided, recorded outcomes (also per `decided_by`), and the
+early-stop shadow measurement (of the runs that ran round 2: how many had a unanimous round 1, and how
+many of those still changed a vote), plus median calls, wall time and tokens. Results written before
+v0.2 have their shadow rebuilt from the ballot history. Neither command ever feeds a tally: they exist
+to choose defaults (`--early-stop`, `--min-margin`, count vs weighted) from data.
+
+## Why this shape (short)
+
+- Independent first answers, then a vote: in "Debate or Vote" (NeurIPS 2025) majority voting
+  explains most of multi-agent-debate gains; debate alone does not raise expected correctness,
+  but targeted interventions that push belief updates towards correction do. Hence: a blind round,
+  one evidence-focused cross-exam, explicit "votes are not evidence, switch only on evidence".
+- Anonymized positions: "When Identity Skews Debate" (ACL 2026) shows sycophancy and self-bias
+  in debate and removes identity markers; peer review in Karpathy's llm-council relabels answers
+  as Response A/B for the same reason.
+- Peer evidence ratings, not self-reported confidence, carry weight; the dossier no longer shows confidence at all,
+  so a confident tone cannot anchor the cross-exam.
+- Different vendors: same-family agents conform and collapse to consensus (CAIS 2026 study of
+  homogeneous teams), so the default council is one seat per vendor family.
+
+See `docs/research.md` in the repo for the full survey.

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "pptx-nova-example-summary/v1",
+  "deckkit": "editorial-forest",
+  "caseId": "editorial-forest.golden-editorial",
+  "kind": "golden",
+  "title": "Quarterly Review 2026",
+  "source": {
+    "content": "pptx-nova/assets/deckkits/editorial-forest/examples/content.json",
+    "build": "pptx-nova/assets/deckkits/editorial-forest/examples/build.mjs",
+    "expected": "pptx-nova/benchmarks/visual/cases/editorial-forest/golden-editorial/expected.json",
+    "benchmarkIndex": "pptx-nova/benchmarks/visual/index.json"
+  },
+  "validation": {
+    "valid": true,
+    "errors": 0,
+    "warnings": 0,
+    "fitDiagnostics": 0,
+    "blockingFitDiagnostics": 0
+  },
+  "patch": {
+    "schemaVersion": "pptx-patch/v1",
+    "ops": 596
+  },
+  "dryRun": {
+    "status": "success",
+    "warnings": 0,
+    "changedParts": 28,
+    "opResults": 596,
+    "visualRisks": {
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "total": 1
+    }
+  },
+  "apply": {
+    "status": "success",
+    "warnings": 0,
+    "changedParts": 28,
+    "opResults": 596,
+    "visualRisks": {
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "total": 1
+    }
+  },
+  "vision": {
+    "status": "success",
+    "slideCount": 9,
+    "issueCount": 0,
+    "autoFixable": 0,
+    "bySeverity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "lowBuckets": {
+      "total": 0,
+      "styleAllowed": 0,
+      "baselineKnown": 0,
+      "new": 0,
+      "changed": 0,
+      "resolved": 0,
+      "reviewable": 0,
+      "baselineUnavailable": true,
+      "baselineUpdated": false
+    },
+    "lowByFamily": {},
+    "newLowByFamily": {},
+    "changedLowByFamily": {},
+    "baseline": {
+      "schemaVersion": "",
+      "fingerprintVersion": "",
+      "path": "pptx-nova/benchmarks/visual/baselines/editorial-forest.golden-editorial.vision-baseline.json",
+      "available": false,
+      "issueCount": 0
+    },
+    "stylePolicy": {
+      "schemaVersion": "pptx-nova-vision-style-policy/v1",
+      "source": "catalog.qualityProfile",
+      "minFontPt": 11,
+      "labelFontPt": 11,
+      "sourceFontPt": 11,
+      "note": "Contract-driven typography with a 11pt floor; actual render review remains required."
+    },
+    "newLowSamples": [],
+    "changedLowSamples": [],
+    "resolvedLowSamples": []
+  },
+  "contactSheet": {
+    "format": "webp",
+    "quality": 86,
+    "encoder": {
+      "tool": "cwebp",
+      "command": "cwebp -quiet -q 86 -m 6 <png> -o <webp>"
+    },
+    "sourcePng": {
+      "bytes": 1259889,
+      "sha256": "b461269ff474c140a2c645690afd6b71d06003ef2833829dbdaf6fc8afcc6e06"
+    },
+    "webp": {
+      "bytes": 447064,
+      "sha256": "91d77a2f398d02333b8bb11b848ccf5b007990470075560dc155e62517e79827"
+    }
+  }
+}
