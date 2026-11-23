@@ -1,0 +1,20 @@
+# no build artifacts — this is a prompt library
+.DS_Store
+Thumbs.db
+*.log
+
+# local scratch dirs created by the skill (only if someone runs it inside this repo)
+.scratch/
+.reverse-engineered/
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# local Claude Code per-session state
+.claude/settings.local.json
+
+# os
+ehthumbs.db
+desktop.ini

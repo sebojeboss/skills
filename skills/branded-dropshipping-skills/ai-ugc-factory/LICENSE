@@ -1,0 +1,129 @@
+Branded Dropshipping Limited Use License
+Version 1.0
+
+Copyright (c) 2026 the Branded Dropshipping copyright holders.
+All rights reserved except for the permissions expressly granted below.
+
+1. Materials and parties
+
+"Materials" means the original skill instructions, references, scripts, source
+code, templates, schemas and examples distributed with this license as part of
+the Branded Dropshipping project. "Licensor" means the copyright holder or
+holders authorizing that distribution, each only to the extent of the rights
+they hold. The project name does not represent an assignment of copyright or
+the formation of a separate legal entity.
+
+"You" means the individual or business exercising these permissions. If you
+act for a business, you must have authority to do so. Separately identified
+third-party materials remain subject to their own terms. This license grants
+no rights in third-party services, software, brands or data.
+
+2. Limited permission to use
+
+Subject to these terms, Licensor grants you a no-charge, nonexclusive,
+nontransferable and nonsublicensable license to download, retain, install,
+read and execute the Materials for your personal use or the operation of
+your own business, including your own ecommerce stores. This includes using
+them to research products, create advertising, build and operate your store,
+and manage your own customers and orders.
+
+You may make the copies reasonably necessary for installation, backup and
+that permitted use. You may load the Materials into a local or hosted
+software agent and make the temporary or technical copies necessary for
+that agent to perform tasks for you. You may supply your own inputs and
+use the provided configuration and template mechanisms. No general right
+to modify, translate or create derivative skill packages is granted.
+
+Your employees and contractors may access necessary copies solely to carry
+out the permitted work on your behalf, under these restrictions. A software
+agent or hosting provider may process necessary copies solely to provide
+that permitted service to you. These permissions do not authorize independent
+reuse, redistribution or model training by those recipients. You must not
+grant them broader rights than you have under this license, except for the
+independent hosting-platform rights preserved in section 6.
+
+3. Work you create
+
+You may use, publish and commercialize the work you create through permitted
+use, including your store, product listings, advertisements, customer replies,
+reports and business configurations. Licensor claims no ownership of your
+original inputs or original work merely because you used the Materials.
+
+You may adapt and include portions of the provided output templates or
+examples that are expressly intended to be incorporated into such work,
+to the extent necessary for that work. You do not have to add a promotional
+credit to your store, advertisements or other such work under this license.
+Existing third-party notices or rights are unaffected.
+
+This output permission does not authorize reproducing the skill instructions,
+reference collection or helper software as an output, or distributing a
+replacement skill, prompt collection, training resource, software toolkit
+or other repackaging of the Materials. Calling copied Materials an output
+does not create a redistribution right.
+
+4. Rights withheld
+
+Except as expressly permitted above, separately authorized in writing by
+Licensor, or allowed under section 6, you may not:
+
+- redistribute, publish, mirror, share or otherwise provide the Materials,
+  in whole or in part, whether unchanged, modified or translated;
+- sell, rent, sublicense, rebrand, bundle or otherwise offer the Materials
+  as a product, skill pack, prompt library, course resource or paid service;
+- make the Materials available as a hosted skill, agent capability or toolkit
+  for others to use independently, or embed them in a product or service that
+  provides that access; or
+- remove or obscure ownership or license notices, or misrepresent yourself
+  as the original author of the Materials or your distribution as an official
+  Branded Dropshipping release.
+
+These restrictions apply to free as well as paid redistribution. Operating
+your own store or customer-support workflow and publishing the work allowed
+by section 3 do not themselves constitute offering the Materials to others.
+Sharing a link to the official project is permitted.
+
+5. Ownership and branding
+
+Licensor retains all rights not expressly granted. Preserve this license and
+the applicable ownership notices in the copies you are permitted to make.
+No permission to use a trademark, logo or project name to imply endorsement,
+affiliation or official status is granted. Truthful identification of the
+origin of the Materials is permitted. No ownership of ideas, methods, facts
+or other unprotected material is asserted by this license.
+
+6. Existing rights and public hosting
+
+Nothing in this license limits a use permitted without Licensor's permission
+by applicable law, including nonwaivable exceptions and limitations. Nothing
+withdraws rights Licensor has independently granted under applicable hosting
+platform terms. In particular, where Licensor makes a repository public on
+GitHub, GitHub's applicable terms permit in-service viewing and forking and
+other specified uses. This license does not purport to prohibit those uses
+or enlarge them into general off-platform redistribution rights.
+
+7. Termination
+
+If you breach these terms, the permissions granted by this license terminate.
+You must stop the unauthorized use and stop using or distributing copies for
+which you no longer have permission. Rights that exist independently under
+section 6 remain unaffected. Termination does not transfer ownership of your
+original inputs or work to Licensor. Licensor may separately authorize a
+use or restore permission in writing.
+
+8. No warranty or promised result
+
+To the extent permitted by applicable law, the Materials are provided as-is,
+without warranties of any kind, including merchantability, fitness for a
+particular purpose, title or noninfringement. Licensor does not promise
+accuracy, availability, compatibility, revenue or other business results.
+To the extent permitted by applicable law, Licensor is not liable for loss
+or damage arising from use of or inability to use the Materials. Nothing
+excludes liability that applicable law does not allow to be excluded.
+
+9. Other permissions
+
+Any broader permission requires separate written authorization from the
+relevant rights holder. Obtain it through the authorized maintainers of
+the official project: https://github.com/branded-dropshipping/skills.
+Free availability does not grant an open-source license, and no future
+conversion to a permissive license is promised.
