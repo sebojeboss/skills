@@ -1,0 +1,8 @@
+{
+  "name": "skills-leaderboard",
+  "version": "1.0.0",
+  "description": "Top skills from the skills.sh leaderboards (all-time, trending, hot).",
+  "author": {
+    "name": "sebojeboss"
+  }
+}

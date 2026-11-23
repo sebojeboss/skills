@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "pinkIndexSlide",
+  "type": "object",
+  "properties": {
+    "brand": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Top-left brand; no business default.",
+      "x-slotBudget": {
+        "fontPt": 11,
+        "widthIn": 5.75,
+        "heightIn": 0.3,
+        "lineHeight": 1.12,
+        "maxLines": 1
+      }
+    },
+    "section": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Top-right section metadata.",
+      "x-slotBudget": {
+        "fontPt": 10.5,
+        "widthIn": 6.13,
+        "heightIn": 0.3,
+        "lineHeight": 1.12,
+        "maxLines": 1
+      }
+    },
+    "kicker": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Pink editorial eyebrow.",
+      "x-slotBudget": {
+        "fontPt": 11,
+        "widthIn": 12.23,
+        "heightIn": 0.3,
+        "lineHeight": 1.12,
+        "maxLines": 1
+      }
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Visible source, assumptions and/or date from content.",
+      "x-slotBudget": {
+        "fontPt": 10.5,
+        "widthIn": 10.7,
+        "heightIn": 0.28,
+        "lineHeight": 1.12,
+        "maxLines": 1
+      }
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Short oversized index title.",
+      "x-slotBudget": {
+        "fontPt": 100,
+        "widthIn": 3.2,
+        "heightIn": 2,
+        "lineHeight": 1,
+        "maxLines": 1
+      }
+    },
+    "continuation": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Index continuation.",
+      "x-slotBudget": {
+        "fontPt": 38,
+        "widthIn": 3.2,
+        "heightIn": 0.9,
+        "lineHeight": 1,
+        "maxLines": 1
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Chapter title.",
+            "x-slotBudget": {
+              "fontPt": 24,
+              "widthIn": 6.22,
+              "heightIn": 0.47,
+              "lineHeight": 1,
+              "maxLines": 1
+            }
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Chapter description.",
+            "x-slotBudget": {
+              "fontPt": 12,
+              "widthIn": 6.22,
+              "heightIn": 1.1433333333333335,
+              "lineHeight": 1.12,
+              "maxLines": 4
+            }
+          },
+          "meta": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Short chapter folio or category.",
+            "x-slotBudget": {
+              "fontPt": 10.5,
+              "widthIn": 1.4,
+              "heightIn": 0.55,
+              "lineHeight": 1.12,
+              "maxLines": 2
+            }
+          },
+          "focus": {
+            "type": "boolean",
+            "x-slotRole": "control"
+          }
+        },
+        "required": ["title", "description", "meta", "focus"],
+        "additionalProperties": false
+      },
+      "x-slotBudget": {
+        "maxItems": 5
+      }
+    }
+  },
+  "required": ["brand", "section", "kicker", "source", "title", "continuation", "items"],
+  "additionalProperties": false
+}
