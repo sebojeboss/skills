@@ -1,0 +1,77 @@
+{
+  "name": "sebojeboss-skills",
+  "owner": {
+    "name": "sebojeboss"
+  },
+  "metadata": {
+    "description": "Curated agent skills for e-commerce, ads, design, security, Lovable and trading. Install only the plugins you need."
+  },
+  "plugins": [
+    {
+      "name": "ecom-business",
+      "source": {
+        "source": "github",
+        "repo": "sebojeboss/skills",
+        "ref": "plugin-ecom-business"
+      },
+      "description": "E-commerce operator skills (886): dropshipping/DTC product research, Shopify CRO, Meta/TikTok ads and UGC creatives, competitor and review research, unit economics, trading/backtesting, voice.",
+      "version": "1.0.0",
+      "category": "business"
+    },
+    {
+      "name": "lovable",
+      "source": {
+        "source": "github",
+        "repo": "sebojeboss/skills",
+        "ref": "plugin-lovable"
+      },
+      "description": "Skills for building apps with Lovable (92): prompting, Supabase RLS/auth, SEO, payments, i18n, deployment.",
+      "version": "1.0.0",
+      "category": "development"
+    },
+    {
+      "name": "design-security",
+      "source": {
+        "source": "github",
+        "repo": "sebojeboss/skills",
+        "ref": "plugin-design-security"
+      },
+      "description": "Anti-slop design, UI/UX, accessibility and defensive web security (253).",
+      "version": "1.0.0",
+      "category": "design"
+    },
+    {
+      "name": "design-taste-privacy",
+      "source": {
+        "source": "github",
+        "repo": "sebojeboss/skills",
+        "ref": "plugin-design-taste-privacy"
+      },
+      "description": "Design taste, landing pages, privacy/GDPR and vibe-coding security audits (503).",
+      "version": "1.0.0",
+      "category": "design"
+    },
+    {
+      "name": "web-build",
+      "source": {
+        "source": "github",
+        "repo": "sebojeboss/skills",
+        "ref": "plugin-web-build"
+      },
+      "description": "Motion, technical SEO, forms, e-commerce checkout, QA and responsive design (156).",
+      "version": "1.0.0",
+      "category": "development"
+    },
+    {
+      "name": "skills-leaderboard",
+      "source": {
+        "source": "github",
+        "repo": "sebojeboss/skills",
+        "ref": "plugin-skills-leaderboard"
+      },
+      "description": "Top skills from the skills.sh leaderboards: all-time, trending, hot (1,000).",
+      "version": "1.0.0",
+      "category": "general"
+    }
+  ]
+}

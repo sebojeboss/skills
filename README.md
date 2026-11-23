@@ -14,7 +14,18 @@ Import a branch URL, e.g. `https://github.com/sebojeboss/skills/tree/skills-lova
 
 Every skill name is unique across all branches except where noted in the original sources.
 
-## Quick start: what to import
+## Install as a plugin marketplace (recommended)
+This repo is a Claude plugin marketplace. In Claude (Plugins -> Add marketplace) or in Claude Code:
+```
+/plugin marketplace add sebojeboss/skills
+/plugin install lovable@sebojeboss-skills
+```
+Plugins (install only what you need): `ecom-business` (886), `lovable` (92), `design-security` (253),
+`design-taste-privacy` (503), `web-build` (156), `skills-leaderboard` (1,000).
+Each plugin lives on its own `plugin-*` branch with a flat `skills/<name>/SKILL.md` layout.
+
+## Alternative: import skills directly
+(Quick start: what to import)
 Import these three (each is under the 1,000-skill limit, names are unique across them):
 
 | Import URL | Skills | Contents |
