@@ -9,8 +9,9 @@ Import a branch URL, e.g. `https://github.com/sebojeboss/skills/tree/skills-lova
 | `skills-lovable` | 92 | Lovable app building (prompting, Supabase, SEO, payments, i18n) |
 | `skills-design-security` | 253 | Anti-slop design, UI/UX, accessibility, defensive web security |
 | `skills-design-security-2` | 503 | Design taste, landing pages, privacy/GDPR, vibe-coding security |
+| `skills-web-build` | 156 | Motion, technical SEO, forms, e-commerce/checkout, QA, responsive design |
 
-Every skill name is unique within a branch and across the last three branches.
+Every skill name is unique across all branches except where noted in the original sources.
 
 ## Notice
 Most skills are third-party content, copied from their original public repositories. Each skill folder keeps its
