@@ -14,6 +14,23 @@ Import a branch URL, e.g. `https://github.com/sebojeboss/skills/tree/skills-lova
 
 Every skill name is unique across all branches except where noted in the original sources.
 
+## Quick start: what to import
+Import these three (each is under the 1,000-skill limit, names are unique across them):
+
+| Import URL | Skills | Contents |
+|---|---|---|
+| `https://github.com/sebojeboss/skills/tree/skills-core` | 978 | Business (e-commerce, ads/creatives, research, unit economics, trading, voice) + Lovable |
+| `https://github.com/sebojeboss/skills/tree/skills-design-all` | 912 | Design, anti-slop, UI/UX, accessibility, SEO, forms, motion, defensive security, privacy |
+| `https://github.com/sebojeboss/skills/tree/skills-extra-all` | 1,000 | skills.sh leaderboards |
+
+The individual branches below are the same content split by topic.
+
+## "Check skills before every task" rule
+`CLAUDE.md` in this repo holds a global rule. Install it for every project on a machine:
+```bash
+mkdir -p ~/.claude && curl -fsSL https://raw.githubusercontent.com/sebojeboss/skills/main/CLAUDE.md >> ~/.claude/CLAUDE.md
+```
+
 ## Notice
 Most skills are third-party content, copied from their original public repositories. Each skill folder keeps its
 original files. Licenses and copyright stay with the original authors; check the source repository before reuse
