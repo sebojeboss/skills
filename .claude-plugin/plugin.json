@@ -1,0 +1,8 @@
+{
+  "name": "lovable",
+  "version": "1.0.0",
+  "description": "Skills for building apps with Lovable: prompting, Supabase, SEO, payments, i18n, deployment.",
+  "author": {
+    "name": "sebojeboss"
+  }
+}
