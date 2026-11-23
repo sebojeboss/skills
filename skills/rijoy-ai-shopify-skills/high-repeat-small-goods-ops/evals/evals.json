@@ -1,0 +1,23 @@
+{
+  "skill_name": "high-repeat-small-goods-ops",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I sell affordable lip gloss on Douyin (AOV 39–69). Last 7 days GMV 80k, CVR 1.6%, return rate 8%, repeat customer mix under 12%. I want to lift 30-day repeat rate from ~6% to 10% without killing ROI. Give me an executable plan for the next 14 days: repeat growth + weekly schedule + key CS copy + review improvement, with what to do/send/watch each day.",
+      "expected_output": "Output includes: summary, clear measurable goals and definitions, 14-day post-purchase cadence table (channel/theme/copy/product/metric by day), weekly daily schedule, CS SOP copy (pre-order/post-ship/review/post-purchase), review improvement actions and risk fallbacks.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Taobao store sells phone cases (iPhone/Xiaomi/Huawei). Main negative reviews: wrong fit/wrong cutout/color difference. I’m running a weekend clearance. Goal: +30% orders, no rise in negative review rate. Output a one-page campaign brief + page change checklist + CS fit-confirmation SOP + post-purchase fallback + review table template, ready to copy and run.",
+      "expected_output": "Output includes: one-page campaign (audience/goals/assortment/offer/rhythm/assets/pages/CS/risks), page change checklist (hero image/PDP/FAQ/fit/color), CS fit-confirmation flow and copy, post-purchase fallback (reship/exchange/partial refund and timeline), weekly review table with test criteria and stop-loss.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I sell small jewelry (earrings/necklaces, AOV 29–99). Content is mainly Xiaohongshu driving to owned channel. New arrivals are inconsistent and repeat customers are going silent. I want a ‘member day’ to boost repeat and AOV. Based on high-repeat small goods logic, give me: segment rules, member benefits (anti-abuse), content topic list (awareness/conversion/trust, 5 each), and a weekly plan (daily actions + metrics).",
+      "expected_output": "Output includes: simplified RFM segments and ops goals, member benefits and anti-abuse rules (threshold/product/time), content topic list (≥5 per category with shoot/convert hooks), weekly ops plan and daily execution, with clear metrics and definitions.",
+      "files": []
+    }
+  ]
+}
