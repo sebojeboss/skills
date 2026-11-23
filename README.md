@@ -10,6 +10,7 @@ Import a branch URL, e.g. `https://github.com/sebojeboss/skills/tree/skills-lova
 | `skills-design-security` | 253 | Anti-slop design, UI/UX, accessibility, defensive web security |
 | `skills-design-security-2` | 503 | Design taste, landing pages, privacy/GDPR, vibe-coding security |
 | `skills-web-build` | 156 | Motion, technical SEO, forms, e-commerce/checkout, QA, responsive design |
+| `skills-business` | 886 | Dropshipping/DTC e-commerce, Shopify CRO, Meta/TikTok ads and UGC creatives, research, unit economics, trading/backtesting, voice |
 
 Every skill name is unique across all branches except where noted in the original sources.
 
