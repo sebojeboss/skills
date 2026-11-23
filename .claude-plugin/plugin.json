@@ -1,0 +1,8 @@
+{
+  "name": "design-security",
+  "version": "1.0.0",
+  "description": "Anti-slop design, UI/UX, accessibility and defensive web security.",
+  "author": {
+    "name": "sebojeboss"
+  }
+}
