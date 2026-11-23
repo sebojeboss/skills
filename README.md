@@ -42,6 +42,12 @@ The individual branches below are the same content split by topic.
 mkdir -p ~/.claude && curl -fsSL https://raw.githubusercontent.com/sebojeboss/skills/main/CLAUDE.md >> ~/.claude/CLAUDE.md
 ```
 
+## Lovable-ready archives (valid names/YAML, no name clashes with Lovable built-ins)
+Lovable accepts one skill per import and limits files per skill. The 503 skills of `skills-design-security-2`
+were fixed (lowercase names, valid YAML, folder = name, `bb-` prefix for the brand-building pack) and split into
+branches `lovable-ds2-part-1`, `lovable-ds2-part-2`, `lovable-ds2-part-3` (163 / 169 / 170 skills).
+The one oversized skill (`taste-skill`, 1,630 files) is excluded from these branches.
+
 ## Notice
 Most skills are third-party content, copied from their original public repositories. Each skill folder keeps its
 original files. Licenses and copyright stay with the original authors; check the source repository before reuse
